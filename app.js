@@ -1,5 +1,22 @@
 'use strict';
 
+//Images array
+var images = [];
+
+//Constructor function
+var CreateImage = function(src, name) {
+  this.src = src;
+  this.name = name;
+  this.likes = 0;
+  images.push(this);
+};
+
+
+
+
+
+/*
+
 function Product(name, src) {
 
 }
@@ -30,4 +47,4 @@ var tracker = {
 
 (function createProducts() {
 
-})()
+})()*/
