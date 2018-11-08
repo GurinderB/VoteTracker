@@ -1,6 +1,7 @@
 'use strict';
 
 //use global variables:
+var ctx = document.getElementById("myChart").getContext('2d');
 var lastSet = [];
 var totalClicks = 0;
 var firstImg = document.getElementById('first');
@@ -20,6 +21,10 @@ function Product(name, imgPath, altText) {
   this.altText = altText;
   this.views = 0; //the other properties havent been seen. set them to 0
   this.votes = 0; //everytime you click on an object increase this value
+  var cOne = Math.floor(Math.random() * 255);
+  var cTwo = Math.floor(Math.random() * 255);
+  var cThree = Math.floor(Math.random() * 255);
+  this.bgColor = `rgba(${cOne}, ${cTwo}, ${cThree}, 0.2)`;
   allProducts.push(this); //push this whenever the object is instantiated
 }
 
@@ -109,14 +114,44 @@ function handleImageClick(event) {
   }
 }
 randomImage();
-//generate a string for every object
 function displayResults() {
-  //use a for loop to iterate through the array:
-  for (var i = 0; i < allProducts.length; i++) { //start at 0. is 0 < 20? if yes, increment it by 1 
-    var listEl = document.createElement('li');
-    listEl.textContent = allProducts[i].votes + ' votes for the ' + allProducts[i].name + ' and ' + allProducts[i].views + ' views ';
-    results.appendChild(listEl);
+  var names = [];
+  for (var i = 0; i < allProducts.length; i++) {
+    names.push(allProducts[i].name);
   }
+
+  var votes = [];
+  for (var j = 0; j < allProducts.length; j++) {
+    votes.push(allProducts[j].votes);
+  }
+
+  var colors = [];
+  for (var k = 0; k < allProducts.length; k++) {
+    colors.push(allProducts[k].bgColor);
+  }
+
+  var chartConfig = {
+    type: 'bar',
+    data: {
+      labels: names,
+      datasets: [{
+        label: '# of Votes',
+        data: votes,
+        backgroundColor: colors,
+      }]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  };
+
+  return new Chart(ctx, chartConfig);
 }
 //add event listeners to receive the value of the callback function 
 firstImg.addEventListener('click', handleImageClick);
