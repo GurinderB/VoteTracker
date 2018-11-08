@@ -73,7 +73,7 @@ function randomImage() {
   lastSet[0] = firstRandom;
   lastSet[1] = secondRandom;
   lastSet[2] = thirdRandom;
-  
+
   firstImg.src = allProducts[firstRandom].imgPath;
   secondImg.src = allProducts[secondRandom].imgPath;
   thirdImg.src = allProducts[thirdRandom].imgPath;
@@ -157,3 +157,37 @@ function displayResults() {
 firstImg.addEventListener('click', handleImageClick);
 secondImg.addEventListener('click', handleImageClick);
 thirdImg.addEventListener('click', handleImageClick);
+
+//add event listeners to receive the value of the callback function
+firstImg.addEventListener('click', handleImageClick);
+secondImg.addEventListener('click', handleImageClick);
+thirdImg.addEventListener('click', handleImageClick);
+////
+
+var myChart = new Chart(ctx, chartConfig);
+
+if (localStorage.getItem('voteData')) {
+  var votes = localStorage.getItem('voteData');
+  myChart.data.datasets[0].data = JSON.parse(votes);
+
+
+  myChart.update();
+}
+//line79:
+colorsEl.addEventListener('click', function (event) {
+  // validate the target as a p tag
+  // get the id of the target p tag
+  // use the id to get the index location for what data point to increment in data
+
+  var pId = event.target.id;
+  var idx = colors.indexOf(pId);
+
+  if (idx !== -1) {
+    myChart.data.datasets[0].data[idx] += 1;
+    console.log(myChart.data.datasets[0].data);
+    myChart.update();
+
+    var jsonData = JSON.stringify(myChart.data.datasets[0].data);
+    localStorage.setItem('voteData', jsonData);
+  }
+});
