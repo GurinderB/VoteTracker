@@ -1,6 +1,5 @@
 'use strict';
 
-//Ray Johnson and I worked together on this code with a tutor.
 //use global variables:
 var lastSet = [];
 var totalClicks = 0;
@@ -9,13 +8,10 @@ var secondImg = document.getElementById('second');
 var thirdImg = document.getElementById('third');
 var results = document.getElementById('results'); //declare the variable results to find results in html
 
-
 //set the foundation to enable a constructor to setup an object for every image downloaded
 var allProducts = [];
 //and to keep track of the times the image is displayed, and then instantiate the new objects->
 //Constructor function for 'Product' objects:
-
-
 
 function Product(name, imgPath, altText) {
   //(image a property on the constructor function(Product))
@@ -26,8 +22,6 @@ function Product(name, imgPath, altText) {
   this.votes = 0; //everytime you click on an object increase this value
   allProducts.push(this); //push this whenever the object is instantiated
 }
-
-
 
 //we need a "blueprint" for creating many objects of the same "type".
 //new Product instantiates (to represent or be an example of something) a new object
@@ -55,57 +49,76 @@ new Product('wine-glass', './img/wine-glass.jpg');
 console.log(allProducts);
 
 
-//create a random image function
+//create a random image function with no duplicaes
 function randomImage() {
+
   var firstRandom = Math.floor(Math.random() * allProducts.length);
-  firstRandom = lastSet[0];
+  if (lastSet.includes(firstRandom) || lastSet.includes(secondRandom) || lastSet.includes(thirdRandom)) {
+    firstRandom = Math.floor(Math.random() * allProducts.length);
+  }
   var secondRandom = Math.floor(Math.random() * allProducts.length);
-  secondRandom = lastSet[1];
-  while (secondRandom === firstRandom) {
+  while (secondRandom === firstRandom || lastSet.includes(firstRandom) || lastSet.includes(secondRandom) || lastSet.includes(thirdRandom)) {
     secondRandom = Math.floor(Math.random() * allProducts.length);
-    secondRandom = lastSet[1];
   }
-
   var thirdRandom = Math.floor(Math.random() * allProducts.length);
-  thirdRandom = lastSet[2];
-  while (thirdRandom === secondRandom || thirdRandom === firstRandom) {
+  while (thirdRandom === secondRandom || thirdRandom === firstRandom || lastSet.includes(firstRandom) || lastSet.includes(secondRandom) || lastSet.includes(thirdRandom)) {
     thirdRandom = Math.floor(Math.random() * allProducts.length);
-    thirdRandom = lastSet[2];
   }
 
-  //grab a random image from the array; access it at the index 'firstRandom' on the array:
+  lastSet[0] = firstRandom;
+  lastSet[1] = secondRandom;
+  lastSet[2] = thirdRandom;
+  
   firstImg.src = allProducts[firstRandom].imgPath;
   secondImg.src = allProducts[secondRandom].imgPath;
   thirdImg.src = allProducts[thirdRandom].imgPath;
+
+  //increment the clicker counter
+  firstImg.alt = allProducts[firstRandom].name;
+  secondImg.alt = allProducts[secondRandom].name;
+  thirdImg.alt = allProducts[thirdRandom].name;
+  console.log(firstImg);
+
+  //update the view count after the user is shown a photo and increment it by 1
+  allProducts[firstRandom].views++;
+  allProducts[secondRandom].views++;
+  allProducts[thirdRandom].views++;
 
   //everytime a random image is called 'totaClicks' increments
   totalClicks++;
   console.log(totalClicks);
   //add an if statement to stop running at 25 clicks (stop the event listener from functioning).
   if (totalClicks === 25) {
-    firstImg.removeEventListener('click', randomImage);
-    secondImg.removeEventListener('click', randomImage);
-    thirdImg.removeEventListener('click', randomImage);
-    displayResults();
+    firstImg.removeEventListener('click', handleImageClick);
+    secondImg.removeEventListener('click', handleImageClick);
+    thirdImg.removeEventListener('click', handleImageClick);
+    displayResults(); //call the function displayResults below
   }
 }
+//pass an event to the function so that you can access the properties of the event.
+function handleImageClick(event) {
+  console.log(event.target.alt);
+  //in order to get a random image which allows new photos to be displayed call randomImage Function
+  randomImage();
 
-
-
+  //iterate through array to check that event has been clicked
+  for (var i = 0; i < allProducts.length; i++) {
+    if (event.target.alt === allProducts[i].name) {
+      allProducts[i].votes++;
+    }
+  }
+}
 randomImage();
 //generate a string for every object
 function displayResults() {
   //use a for loop to iterate through the array:
-  for (var i = 0; i < allProducts.length; i++) { //start at 0. is 0 < 20? if yes, increment it by 1
+  for (var i = 0; i < allProducts.length; i++) { //start at 0. is 0 < 20? if yes, increment it by 1 
     var listEl = document.createElement('li');
     listEl.textContent = allProducts[i].votes + ' votes for the ' + allProducts[i].name + ' and ' + allProducts[i].views + ' views ';
     results.appendChild(listEl);
   }
 }
-
-
-
-//add event listeners to receive the value of the callback function
-firstImg.addEventListener('click', randomImage);
-secondImg.addEventListener('click', randomImage);
-thirdImg.addEventListener('click', randomImage);
+//add event listeners to receive the value of the callback function 
+firstImg.addEventListener('click', handleImageClick);
+secondImg.addEventListener('click', handleImageClick);
+thirdImg.addEventListener('click', handleImageClick);
