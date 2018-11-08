@@ -1,5 +1,5 @@
 # VoteTracker
- Contributors: Guru, Gwen & Clarice
+ Contributors: Guru, Gwen, Clarice, & Alister
    As a user, I want to be presented with a choice of three different images of randomly selected products out of a pool of 14 images.
 •    As a user, after I select an image, I would like my selection to recorded.
 •    As a user, I would like my total clicks to be recorded.
