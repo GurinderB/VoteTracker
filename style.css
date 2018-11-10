@@ -1,1 +1,11 @@
-
+body {
+    background-color: rgb(78, 161, 194);
+  }
+  
+  /* maintain picture aspect ratio */
+  img { height: 277px;
+  width:277px;
+  object-fit:contain; 
+  }
+  
+  
