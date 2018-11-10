@@ -2,77 +2,79 @@
 
 //use global variables:
 var ctx = document.getElementById("myChart").getContext('2d');
-var lastSet = [];
-var totalClicks = 0;
+var totalClicks = 0; //this var tracks how many times someone clicks the images
 var firstImg = document.getElementById('first');
 var secondImg = document.getElementById('second');
 var thirdImg = document.getElementById('third');
-var results = document.getElementById('results'); //declare the variable results to find results in html
+// var results = document.getElementById('results'); //declare the variable results to find results in html
+var lastShownImages = [];//keeps track of images displayed
 
 //set the foundation to enable a constructor to setup an object for every image downloaded
 var allProducts = [];
-//and to keep track of the times the image is displayed, and then instantiate the new objects->
+//and to keep track of the times the image is displayed, and then instantiate the new objects with name variable and an imgPath->
 //Constructor function for 'Product' objects:
-
-function Product(name, imgPath, altText) {
+function Product(name, imgPath) {
   //(image a property on the constructor function(Product))
   this.name = name;
   this.imgPath = imgPath;
-  this.altText = altText;
   this.views = 0; //the other properties havent been seen. set them to 0
   this.votes = 0; //everytime you click on an object increase this value
+
   var cOne = Math.floor(Math.random() * 255);
   var cTwo = Math.floor(Math.random() * 255);
   var cThree = Math.floor(Math.random() * 255);
+
   this.bgColor = `rgba(${cOne}, ${cTwo}, ${cThree}, 0.2)`;
-  allProducts.push(this); //push this whenever the object is instantiated
+  allProducts.push(this); //push this whenever the object is instantiated (into the allProducts arrary)
+}
+if (localStorage.productVotes) { //Is there a truthy value on the key in empty storage?
+  allProducts = JSON.parse(localStorage.getItem('productVotes'));//look for the key 'productVote' in local storage 
+  //If something is there then take that data and set it into the allProducts array
+} else {
+  new Product('bag', './img/bag.jpg');
+  new Product('banana', './img/banana.jpg');
+  new Product('bathroom', './img/bathroom.jpg');
+  new Product('boots', './img/boots.jpg');
+  new Product('breakfast', './img/breakfast.jpg');
+  new Product('bubblegum', './img/bubblegum.jpg');
+  new Product('chair', './img/chair.jpg');
+  new Product('cthulhu', './img/cthulhu.jpg');
+  new Product('dog-duck', './img/dog-duck.jpg');
+  new Product('dragon', './img/dragon.jpg');
+  new Product('pen', './img/pen.jpg');
+  new Product('pet-sweep', './img/pet-sweep.jpg');
+  new Product('scissors', './img/scissors.jpg');
+  new Product('shark', './img/shark.jpg');
+  new Product('sweep', './img/sweep.png');
+  new Product('tauntaun', './img/tauntaun.jpg');
+  new Product('unicorn', './img/unicorn.jpg');
+  new Product('usb', './img/usb.gif');
+  new Product('water-can', './img/water-can.jpg');
+  new Product('wine-glass', './img/wine-glass.jpg');
 }
 
 //we need a "blueprint" for creating many objects of the same "type".
 //new Product instantiates (to represent or be an example of something) a new object
-//The way to create an "object type", is to use an object constructor function:
-new Product('bag', './img/bag.jpg');
-new Product('banana', './img/banana.jpg');
-new Product('bathroom', './img/bathroom.jpg');
-new Product('boots', './img/boots.jpg');
-new Product('breakfast', './img/breakfast.jpg');
-new Product('bubblegum', './img/bubblegum.jpg');
-new Product('chair', './img/chair.jpg');
-new Product('cthulhu', './img/cthulhu.jpg');
-new Product('dog-duck', './img/dog-duck.jpg');
-new Product('dragon', './img/dragon.jpg');
-new Product('pen', './img/pen.jpg');
-new Product('pet-sweep', './img/pet-sweep.jpg');
-new Product('scissors', './img/scissors.jpg');
-new Product('shark', './img/shark.jpg');
-new Product('sweep', './img/sweep.png');
-new Product('tauntaun', './img/tauntaun.jpg');
-new Product('unicorn', './img/unicorn.jpg');
-new Product('usb', './img/usb.gif');
-new Product('water-can', './img/water-can.jpg');
-new Product('wine-glass', './img/wine-glass.jpg');
-console.log(allProducts);
-
-
-//create a random image function with no duplicaes
+//The way to create an "object type" is to use an object constructor function:
+// console.log(allProducts);
+//create a random image function:
 function randomImage() {
-
   var firstRandom = Math.floor(Math.random() * allProducts.length);
-  if (lastSet.includes(firstRandom) || lastSet.includes(secondRandom) || lastSet.includes(thirdRandom)) {
-    firstRandom = Math.floor(Math.random() * allProducts.length);
-  }
   var secondRandom = Math.floor(Math.random() * allProducts.length);
-  while (secondRandom === firstRandom || lastSet.includes(firstRandom) || lastSet.includes(secondRandom) || lastSet.includes(thirdRandom)) {
-    secondRandom = Math.floor(Math.random() * allProducts.length);
-  }
   var thirdRandom = Math.floor(Math.random() * allProducts.length);
-  while (thirdRandom === secondRandom || thirdRandom === firstRandom || lastSet.includes(firstRandom) || lastSet.includes(secondRandom) || lastSet.includes(thirdRandom)) {
+
+  //generate a new image if there is duplication and use an array method to iterate through the last shown images.
+  //if any of the conditions in the while loop are true then reassign the values until there isn't a duplicate.
+  //name the array (allProducts); attach the methods (with a while loop); then invoke it against the value you want to check inside the array:
+  while (firstRandom === secondRandom || firstRandom === thirdRandom || secondRandom === thirdRandom || lastShownImages.includes(firstRandom) || lastShownImages.includes(secondRandom) || lastShownImages.includes(thirdRandom)) {
+    firstRandom = Math.floor(Math.random() * allProducts.length);
+    secondRandom = Math.floor(Math.random() * allProducts.length);
     thirdRandom = Math.floor(Math.random() * allProducts.length);
   }
-
-  lastSet[0] = firstRandom;
-  lastSet[1] = secondRandom;
-  lastSet[2] = thirdRandom;
+  //once the while loop stops running update the array after identifying that the image is unique/unduplicated:
+  lastShownImages[0] = firstRandom;
+  lastShownImages[1] = secondRandom;
+  lastShownImages[2] = thirdRandom;
 
   firstImg.src = allProducts[firstRandom].imgPath;
   secondImg.src = allProducts[secondRandom].imgPath;
@@ -82,7 +84,6 @@ function randomImage() {
   firstImg.alt = allProducts[firstRandom].name;
   secondImg.alt = allProducts[secondRandom].name;
   thirdImg.alt = allProducts[thirdRandom].name;
-  console.log(firstImg);
 
   //update the view count after the user is shown a photo and increment it by 1
   allProducts[firstRandom].views++;
@@ -98,22 +99,23 @@ function randomImage() {
     secondImg.removeEventListener('click', handleImageClick);
     thirdImg.removeEventListener('click', handleImageClick);
     displayResults(); //call the function displayResults below
+    localStorage.setItem('productVotes', JSON.stringify(allProducts)); //is there a truthy value on the key ('productVotes') in empty storage?
   }
+
 }
 //pass an event to the function so that you can access the properties of the event.
 function handleImageClick(event) {
-  console.log(event.target.alt);
-  //in order to get a random image which allows new photos to be displayed call randomImage Function
-  randomImage();
-
   //iterate through array to check that event has been clicked
   for (var i = 0; i < allProducts.length; i++) {
     if (event.target.alt === allProducts[i].name) {
       allProducts[i].votes++;
     }
   }
+  //in order to get a random image which allows new photos to be displayed call randomImage Function
+  randomImage();
 }
 randomImage();
+//generate a string for every object
 function displayResults() {
   var names = [];
   for (var i = 0; i < allProducts.length; i++) {
@@ -153,37 +155,7 @@ function displayResults() {
 
   return new Chart(ctx, chartConfig);
 }
-
 //add event listeners to receive the value of the callback function
 firstImg.addEventListener('click', handleImageClick);
 secondImg.addEventListener('click', handleImageClick);
 thirdImg.addEventListener('click', handleImageClick);
-////
-
-var myChart = new Chart(ctx, chartConfig);
-
-if (localStorage.getItem('voteData')) {
-  var votes = localStorage.getItem('voteData');
-  myChart.data.datasets[0].data = JSON.parse(votes);
-
-
-  myChart.update();
-}
-//line79:
-colorsEl.addEventListener('click', function (event) {
-  // validate the target as a p tag
-  // get the id of the target p tag
-  // use the id to get the index location for what data point to increment in data
-
-  var pId = event.target.id;
-  var idx = colors.indexOf(pId);
-
-  if (idx !== -1) {
-    myChart.data.datasets[0].data[idx] += 1;
-    console.log(myChart.data.datasets[0].data);
-    myChart.update();
-
-    var jsonData = JSON.stringify(myChart.data.datasets[0].data);
-    localStorage.setItem('voteData', jsonData);
-  }
-});
